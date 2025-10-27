@@ -27,7 +27,7 @@ const PORT = process.env.PORT;
 const httpServer = createServer(app);
 initializeSocket(httpServer);
 
-// UPDATE CORS TO ALLOW MULTIPLE ORIGINS
+// FIXED CORS CONFIG
 app.use(
 	cors({
 		origin: [
@@ -39,24 +39,24 @@ app.use(
 	})
 );
 
-app.use(express.json()); // to parse req.body
-app.use(clerkMiddleware()); // this will add auth to req obj => req.auth
+app.use(express.json());
+app.use(clerkMiddleware());
 app.use(
 	fileUpload({
 		useTempFiles: true,
 		tempFileDir: path.join(__dirname, "tmp"),
 		createParentPath: true,
 		limits: {
-			fileSize: 10 * 1024 * 1024, // 10MB  max file size
+			fileSize: 10 * 1024 * 1024,
 		},
 	})
 );
 
-// Serve static files - ADD THIS
+// Serve static files
 app.use('/cover-images', express.static(path.join(__dirname, 'cover-images')));
 app.use('/songs', express.static(path.join(__dirname, 'songs')));
 
-// Add a middleware to convert relative URLs to absolute - ADD THIS
+// Fix URL conversion middleware
 app.use((req, res, next) => {
   const originalJson = res.json;
   res.json = function(data) {
@@ -99,6 +99,7 @@ cron.schedule("0 * * * *", () => {
 	}
 });
 
+// Routes
 app.use("/api/users", userRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/auth", authRoutes);
@@ -106,20 +107,7 @@ app.use("/api/songs", songRoutes);
 app.use("/api/albums", albumRoutes);
 app.use("/api/stats", statRoutes);
 
-// PLACEHOLDER ROUTES FOR MISSING FILES - ADD THIS
-app.get('/cover-images/:filename', (req, res) => {
-  res.redirect('https://via.placeholder.com/300x300/1DB954/FFFFFF?text=Album+Cover');
-});
-
-app.get('/songs/:filename', (req, res) => {
-  res.redirect('https://www.soundjay.com/button/button-1.mp3');
-});
-
-app.get('/albums/:filename', (req, res) => {
-  res.redirect('https://via.placeholder.com/400x400/1DB954/FFFFFF?text=Album');
-});
-
-// ADD HEALTH CHECK ROUTE HERE
+// HEALTH CHECK ROUTE
 app.get('/health', (req, res) => {
 	res.status(200).json({ 
 		status: 'OK', 
@@ -128,7 +116,9 @@ app.get('/health', (req, res) => {
 	});
 });
 
-// error handler
+// REMOVED THE PROBLEMATIC PLACEHOLDER ROUTES THAT WERE CAUSING AUDIO ERRORS
+
+// Error handler
 app.use((err, req, res, next) => {
 	res.status(500).json({ message: process.env.NODE_ENV === "production" ? "Internal server error" : err.message });
 });
