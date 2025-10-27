@@ -70,7 +70,14 @@ app.use("/api/songs", songRoutes);
 app.use("/api/albums", albumRoutes);
 app.use("/api/stats", statRoutes);
 
-
+// ADD HEALTH CHECK ROUTE HERE
+app.get('/health', (req, res) => {
+	res.status(200).json({ 
+		status: 'OK', 
+		timestamp: new Date().toISOString(),
+		environment: process.env.NODE_ENV 
+	});
+});
 
 // error handler
 app.use((err, req, res, next) => {
