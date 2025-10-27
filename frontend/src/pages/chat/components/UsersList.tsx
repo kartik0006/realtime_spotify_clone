@@ -1,7 +1,7 @@
-import UsersListSkeleton from "@/components/skeletons/UsersListSkeleton";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { useChatStore } from "@/stores/useChatStore";
+import UsersListSkeleton from "../../../components/skeletons/UsersListSkeleton";
+import { Avatar, AvatarFallback, AvatarImage } from "../../../components/ui/avatar";
+import { ScrollArea } from "../../../components/ui/scroll-area";
+import { useChatStore } from "../../../stores/useChatStore";
 
 const UsersList = () => {
 	const { users, selectedUser, isLoading, setSelectedUser, onlineUsers } = useChatStore();

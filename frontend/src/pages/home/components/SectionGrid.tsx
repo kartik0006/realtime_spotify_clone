@@ -1,6 +1,6 @@
-import type { Song } from "@/types";
+import type { Song } from "../../../types";
 import SectionGridSkeleton from "./SectionGridSkeleton";
-import { Button } from "@/components/ui/button";
+import { Button } from "../../../components/ui/button";
 import PlayButton from "./PlayButton";
 // import PlayButton from "./PlayButton";
 

@@ -1,4 +1,4 @@
-import { useMusicStore } from "@/stores/useMusicStore";
+import { useMusicStore } from "../../../stores/useMusicStore";
 import { Library, ListMusic, PlayCircle, Users2 } from "lucide-react";
 import StatsCard from "./StatsCard";
 
