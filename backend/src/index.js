@@ -27,9 +27,14 @@ const PORT = process.env.PORT;
 const httpServer = createServer(app);
 initializeSocket(httpServer);
 
+// UPDATE CORS TO ALLOW MULTIPLE ORIGINS
 app.use(
 	cors({
-		origin: process.env.CORS_ORIGIN,
+		origin: [
+			"https://realtime-spotify-clone-n645ymc8g.vercel.app",
+			"http://localhost:3000",
+			process.env.CORS_ORIGIN
+		].filter(Boolean),
 		credentials: true,
 	})
 );
