@@ -1,5 +1,5 @@
-import { axiosInstance } from "@/lib/axios";
-import type { Message, User } from "@/types";
+import { axiosInstance } from "../lib/axios";
+import type { Message, User } from "../types";
 import { create } from "zustand";
 import { io } from "socket.io-client";
 
@@ -45,10 +45,10 @@ export const useChatStore = create<ChatStore>((set, get) => ({
 	fetchUsers: async () => {
 		set({ isLoading: true, error: null });
 		try {
-			const response = await axiosInstance.get("/users");
+			const response = await axiosInstance.get<User[]>("/users");
 			set({ users: response.data });
 		} catch (error: any) {
-			set({ error: error.response.data.message });
+			set({ error: error.response?.data?.message || "Failed to fetch users" });
 		} finally {
 			set({ isLoading: false });
 		}
@@ -124,10 +124,10 @@ export const useChatStore = create<ChatStore>((set, get) => ({
 	fetchMessages: async (userId: string) => {
 		set({ isLoading: true, error: null });
 		try {
-			const response = await axiosInstance.get(`/users/messages/${userId}`);
+			const response = await axiosInstance.get<Message[]>(`/users/messages/${userId}`);
 			set({ messages: response.data });
 		} catch (error: any) {
-			set({ error: error.response.data.message });
+			set({ error: error.response?.data?.message || "Failed to fetch messages" });
 		} finally {
 			set({ isLoading: false });
 		}
