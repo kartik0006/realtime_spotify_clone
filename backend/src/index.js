@@ -27,20 +27,40 @@ const PORT = process.env.PORT;
 const httpServer = createServer(app);
 initializeSocket(httpServer);
 
-// UPDATE CORS TO ALLOW MULTIPLE ORIGINS
+// FIXED CORS CONFIG FOR MULTIPLE USERS
 app.use(
 	cors({
-		origin: [
-			"https://realtime-spotify-clone-n645ymc8g.vercel.app",
-			"http://localhost:3000",
-			process.env.CORS_ORIGIN
-		].filter(Boolean),
+		origin: function (origin, callback) {
+			const allowedOrigins = [
+				"https://realtime-spotify-clone-n645ymc8g.vercel.app",
+				"http://localhost:3000",
+				process.env.CORS_ORIGIN
+			].filter(Boolean);
+			
+			// Allow requests with no origin (mobile apps) or allowed origins
+			if (!origin || allowedOrigins.includes(origin)) {
+				callback(null, true);
+			} else {
+				callback(new Error('Not allowed by CORS'));
+			}
+		},
 		credentials: true,
+		methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+		allowedHeaders: ['Content-Type', 'Authorization', 'Clerk-Auth']
 	})
 );
 
 app.use(express.json()); // to parse req.body
-app.use(clerkMiddleware()); // this will add auth to req obj => req.auth
+
+// FIXED CLERK MIDDLEWARE FOR MULTI-USER SUPPORT
+app.use(clerkMiddleware({
+	authorizedParties: [
+		'https://realtime-spotify-clone-n645ymc8g.vercel.app',
+		'http://localhost:3000',
+		process.env.CORS_ORIGIN
+	].filter(Boolean)
+}));
+
 app.use(
 	fileUpload({
 		useTempFiles: true,
@@ -81,6 +101,15 @@ app.get('/health', (req, res) => {
 		status: 'OK', 
 		timestamp: new Date().toISOString(),
 		environment: process.env.NODE_ENV 
+	});
+});
+
+// ADD SESSION TEST ROUTE
+app.get('/api/session-test', (req, res) => {
+	res.json({ 
+		userId: req.auth?.userId,
+		sessionId: req.auth?.sessionId,
+		message: 'Session working correctly'
 	});
 });
 
